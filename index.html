@@ -10,16 +10,16 @@
       padding: 0;
       background-color: #0d0d0d;
       color: #0f0;
-      font-family: monospace;
+      font-family: 'Courier New', monospace;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       height: 100vh;
     }
 
     .container {
-      max-width: 500px;
       width: 100%;
+      max-width: 500px;
       padding: 2rem;
       box-shadow: 0 0 25px rgba(0, 255, 0, 0.1);
       border-radius: 10px;
@@ -28,7 +28,7 @@
 
     h1 {
       text-align: center;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
     }
 
     input, button {
@@ -63,6 +63,22 @@
       color: #aaa;
       text-align: center;
     }
+
+    #suggestions {
+      margin-top: 1rem;
+      background-color: #222;
+      padding: 0.5rem;
+      border-radius: 6px;
+    }
+
+    #suggestions div {
+      padding: 0.5rem;
+      cursor: pointer;
+    }
+
+    #suggestions div:hover {
+      background-color: #444;
+    }
   </style>
 </head>
 <body>
@@ -77,24 +93,22 @@
 
     <!-- Command Section -->
     <div id="commandSection" class="hidden">
-      <input type="text" id="commandInput" placeholder="Enter command (e.g. yt, g, gh)" />
+      <input type="text" id="commandInput" placeholder="Enter command (e.g. yt, g, gh)" onkeyup="suggestCommands()" />
       <div class="hint">Allowed: yt, g, gh, wiki, docs</div>
+      <div id="suggestions" class="hidden"></div>
     </div>
   </div>
 
   <script>
-    const correctPassword = "access123"; // change this to your own
-    const commandMap = {
-      yt: "https://youtube.com",
-      g: "https://google.com",
-      gh: "https://github.com",
-      wiki: "https://wikipedia.org",
-      docs: "https://docs.google.com"
-    };
+    const password = "access123"; // Your password token
+    const backendUrl = 'http://localhost:3000/redirect'; // Change to deployed backend
+
+    // Auto-suggest commands
+    const commands = ['yt', 'g', 'gh', 'wiki', 'docs'];
 
     function checkPassword() {
       const input = document.getElementById("passwordInput").value;
-      if (input === correctPassword) {
+      if (input === password) {
         document.getElementById("loginSection").classList.add("hidden");
         document.getElementById("commandSection").classList.remove("hidden");
         document.getElementById("title").textContent = "🔗 Quick Access";
@@ -104,17 +118,42 @@
       }
     }
 
-    document.getElementById("commandInput").addEventListener("keypress", function (e) {
-      if (e.key === "Enter") {
-        const cmd = e.target.value.trim().toLowerCase();
-        if (commandMap[cmd]) {
-          window.open(commandMap[cmd], "_blank");
-          e.target.value = ""; // reset input
-        } else {
-          alert("Command not recognized or not permitted.");
-        }
+    function suggestCommands() {
+      const input = document.getElementById("commandInput").value.toLowerCase();
+      const filteredCommands = commands.filter(command => command.startsWith(input));
+      const suggestionList = document.getElementById("suggestions");
+      suggestionList.innerHTML = ''; // clear previous suggestions
+
+      if (input && filteredCommands.length > 0) {
+        suggestionList.classList.remove("hidden");
+        filteredCommands.forEach(command => {
+          const div = document.createElement("div");
+          div.textContent = command;
+          div.onclick = () => executeCommand(command);
+          suggestionList.appendChild(div);
+        });
+      } else {
+        suggestionList.classList.add("hidden");
       }
-    });
+    }
+
+    function executeCommand(command) {
+      const token = document.getElementById("passwordInput").value; // you could store a token for backend use
+      fetch(backendUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command, token })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.redirectTo) {
+          window.open(data.redirectTo, '_blank');
+        } else {
+          alert(data.message || 'An error occurred.');
+        }
+      })
+      .catch(err => alert('Error communicating with backend.'));
+    }
   </script>
 </body>
 </html>
