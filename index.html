@@ -2,35 +2,81 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Instant Redirect</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Instant Website Redirect</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: system-ui, sans-serif;
+      background: #f0f0f5;
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 100px;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
     }
-    input, button {
+    h1 {
+      margin-bottom: 20px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    input[type="text"] {
+      width: 300px;
       padding: 10px;
-      font-size: 1em;
-      margin: 10px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    @media (max-width: 400px) {
+      input[type="text"] {
+        width: 90%;
+      }
     }
   </style>
 </head>
 <body>
-  <h2>Enter a Website URL</h2>
-  <input type="text" id="urlInput" placeholder="https://example.com">
-  <button onclick="goToSite()">Go</button>
+  <h1>Instant Redirect</h1>
+  <form id="redirectForm" aria-label="Redirect to a website">
+    <input 
+      type="text" 
+      id="urlInput" 
+      placeholder="Enter a website URL" 
+      aria-label="Website URL"
+      autocomplete="off"
+      autofocus
+      required
+    >
+    <button type="submit">Go</button>
+  </form>
 
   <script>
-    function goToSite() {
+    document.getElementById("redirectForm").addEventListener("submit", function(e) {
+      e.preventDefault();
       let url = document.getElementById("urlInput").value.trim();
+
       if (!/^https?:\/\//i.test(url)) {
         url = "https://" + url;
       }
-      window.location.href = url;
-    }
+
+      // Open in a new tab
+      window.open(url, '_blank');
+    });
   </script>
 </body>
 </html>
