@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Instant Redirect</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 100px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 1em;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Enter a Website URL</h2>
+  <input type="text" id="urlInput" placeholder="https://example.com">
+  <button onclick="goToSite()">Go</button>
+
+  <script>
+    function goToSite() {
+      let url = document.getElementById("urlInput").value.trim();
+      if (!/^https?:\/\//i.test(url)) {
+        url = "https://" + url;
+      }
+      window.location.href = url;
+    }
+  </script>
+</body>
+</html>
