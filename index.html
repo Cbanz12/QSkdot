@@ -1,100 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Quick Access Portal</title>
   <style>
     body {
-      font-family: monospace;
-      background-color: #111;
-      color: #0f0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       margin: 0;
+      padding: 0;
+      background-color: #0d0d0d;
+      color: #0f0;
+      font-family: monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
 
-    .terminal {
-      background-color: #000;
-      padding: 2rem;
-      border-radius: 10px;
-      width: 100%;
+    .container {
       max-width: 500px;
-      box-shadow: 0 0 20px #0f04;
+      width: 100%;
+      padding: 2rem;
+      box-shadow: 0 0 25px rgba(0, 255, 0, 0.1);
+      border-radius: 10px;
+      background-color: #000;
     }
 
-    input {
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    input, button {
       width: 100%;
       padding: 0.8rem;
       font-size: 1rem;
+      margin-top: 1rem;
+      border-radius: 6px;
+      border: 1px solid #0f0;
       background-color: #111;
       color: #0f0;
-      border: 1px solid #0f0;
-      border-radius: 5px;
-      margin-top: 1rem;
     }
 
     button {
-      margin-top: 1rem;
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
       background-color: #0f0;
       color: #000;
-      border: none;
-      border-radius: 5px;
       cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #7fff00;
     }
 
     .hidden {
       display: none;
     }
+
+    .hint {
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      color: #aaa;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
-  <div class="terminal">
-    <div id="login">
-      <p>Password:</p>
-      <input type="password" id="passwordInput" placeholder="Enter password" autofocus>
+  <div class="container">
+    <h1 id="title">🔐 Access Portal</h1>
+
+    <!-- Password Gate -->
+    <div id="loginSection">
+      <input type="password" id="passwordInput" placeholder="Enter access password" autofocus />
       <button onclick="checkPassword()">Enter</button>
     </div>
 
+    <!-- Command Section -->
     <div id="commandSection" class="hidden">
-      <p>🔒 Access granted. Enter command:</p>
-      <input type="text" id="commandInput" placeholder="e.g. yt, g, gh" autofocus>
+      <input type="text" id="commandInput" placeholder="Enter command (e.g. yt, g, gh)" />
+      <div class="hint">Allowed: yt, g, gh, wiki, docs</div>
     </div>
   </div>
 
   <script>
-    const allowedCommands = {
-      "yt": "https://youtube.com",
-      "gh": "https://github.com",
-      "g": "https://google.com",
-      "wiki": "https://wikipedia.org",
-      "docs": "https://docs.google.com",
+    const correctPassword = "access123"; // change this to your own
+    const commandMap = {
+      yt: "https://youtube.com",
+      g: "https://google.com",
+      gh: "https://github.com",
+      wiki: "https://wikipedia.org",
+      docs: "https://docs.google.com"
     };
-
-    const password = "access123"; // change this to your preferred password
 
     function checkPassword() {
       const input = document.getElementById("passwordInput").value;
-      if (input === password) {
-        document.getElementById("login").classList.add("hidden");
+      if (input === correctPassword) {
+        document.getElementById("loginSection").classList.add("hidden");
         document.getElementById("commandSection").classList.remove("hidden");
+        document.getElementById("title").textContent = "🔗 Quick Access";
         document.getElementById("commandInput").focus();
       } else {
         alert("Incorrect password.");
       }
     }
 
-    document.getElementById("commandInput").addEventListener("keypress", function(e) {
+    document.getElementById("commandInput").addEventListener("keypress", function (e) {
       if (e.key === "Enter") {
         const cmd = e.target.value.trim().toLowerCase();
-        if (allowedCommands[cmd]) {
-          window.open(allowedCommands[cmd], "_blank");
+        if (commandMap[cmd]) {
+          window.open(commandMap[cmd], "_blank");
+          e.target.value = ""; // reset input
         } else {
-          alert("Command not recognized or permitted.");
+          alert("Command not recognized or not permitted.");
         }
       }
     });
